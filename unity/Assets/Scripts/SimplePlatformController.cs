@@ -23,6 +23,11 @@ public class SimplePlatformController : MonoBehaviour {
 
     public bool overlap;
 
+    // Phase Bar regeneration delay
+    private float phaseRegenDelay = 1;
+    private float phaseRegenStart;
+
+
     private bool grounded = false;
     private Animator anim;
     private Rigidbody2D rb2d;
@@ -35,7 +40,7 @@ public class SimplePlatformController : MonoBehaviour {
         phaseBarNum.text = "Phase Bar: " + Mathf.Round(phaseBarSlider.value * 100) + "%";
 
     }
-
+   
     // Update is called once per frame
     void Update() {
         grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
@@ -68,8 +73,12 @@ public class SimplePlatformController : MonoBehaviour {
         {
             if (phaseBarSlider.value < 100)
             {
-                phaseBarSlider.value += .005f;
-                phaseBarNum.text = "Phase Bar: " + Mathf.Round(phaseBarSlider.value * 100) + "%";
+                if (Time.time > phaseRegenStart)
+                {
+                    phaseBarSlider.value += .005f;
+                    phaseBarNum.text = "Phase Bar: " + Mathf.Round(phaseBarSlider.value * 100) + "%";
+                }
+                
             }
         }
 
@@ -126,6 +135,7 @@ public class SimplePlatformController : MonoBehaviour {
     {
         body.GetComponent<Renderer>().enabled = true;
         Physics2D.IgnoreLayerCollision(9, 10, false);
+        phaseRegenStart = Time.time + phaseRegenDelay;
     }
 
     void OnCollisionEnter2D(Collision2D collisionTarget) {
