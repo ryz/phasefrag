@@ -40,17 +40,17 @@ public class SimplePlatformController : MonoBehaviour {
     void Update() {
         grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
-        if (Input.GetKeyDown(KeyCode.W) && grounded || Input.GetKeyDown(KeyCode.UpArrow) && grounded)
+        if (Input.GetKeyDown(KeyCode.W) && grounded || Input.GetKeyDown(KeyCode.UpArrow) && grounded || Input.GetButtonDown("Jump") && grounded)
         {
             jump = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.RightControl))
+        if (Input.GetKeyDown(KeyCode.RightControl) || Input.GetButtonDown("Fire1"))
         {
             PhaseShiftStart();
         }
 
-        if (Input.GetKey(KeyCode.RightControl))
+        if (Input.GetKey(KeyCode.RightControl) || Input.GetButton("Fire1"))
         {
             if (phaseBarSlider.value > 0)
             {
@@ -64,7 +64,7 @@ public class SimplePlatformController : MonoBehaviour {
             }
         }
 
-        if (!Input.GetKey(KeyCode.RightControl))
+        if (!Input.GetKey(KeyCode.RightControl) || !Input.GetButton("Fire1"))
         {
             if (phaseBarSlider.value < 100)
             {
@@ -73,7 +73,7 @@ public class SimplePlatformController : MonoBehaviour {
             }
         }
 
-        if (Input.GetKeyUp(KeyCode.RightControl))
+        if (Input.GetKeyUp(KeyCode.RightControl) || Input.GetButtonUp("Fire1"))
         {
             PhaseShiftEnd();
         }
