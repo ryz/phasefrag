@@ -14,10 +14,12 @@ public class SimplePlatformController : MonoBehaviour {
     public Transform groundCheck;
 
     public GameObject body; // To hide the body when in ghost form
-
     public GameObject other;
-
     public GameObject enemy2.renderer.bounds;
+
+    public Slider phaseBarSlider;
+    public Text phaseBarNum;
+
 
     public bool overlap;
 
@@ -30,23 +32,48 @@ public class SimplePlatformController : MonoBehaviour {
         anim = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
 
+        phaseBarNum.text = "Phase Bar: " + Mathf.Round(phaseBarSlider.value * 100) + "%";
+
     }
 
     // Update is called once per frame
     void Update() {
         grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
-        if (Input.GetKeyDown(KeyCode.W) && grounded)
+        if (Input.GetKeyDown(KeyCode.W) && grounded || Input.GetKeyDown(KeyCode.UpArrow) && grounded)
         {
             jump = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.RightControl))
         {
             PhaseShiftStart();
         }
 
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetKey(KeyCode.RightControl))
+        {
+            if (phaseBarSlider.value > 0)
+            {
+                phaseBarSlider.value -= .01f;
+                phaseBarNum.text = "Phase Bar: " + Mathf.Round(phaseBarSlider.value * 100) + "%";
+            }
+
+            if (phaseBarSlider.value <= 0)
+            {
+                PhaseShiftEnd();
+            }
+        }
+
+        if (!Input.GetKey(KeyCode.RightControl))
+        {
+            if (phaseBarSlider.value < 100)
+            {
+                phaseBarSlider.value += .005f;
+                phaseBarNum.text = "Phase Bar: " + Mathf.Round(phaseBarSlider.value * 100) + "%";
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.RightControl))
         {
             PhaseShiftEnd();
         }

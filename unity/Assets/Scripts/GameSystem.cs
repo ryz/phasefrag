@@ -50,7 +50,7 @@ public class GameSystem : MonoBehaviour {
             Vector3 spawnPosition = new Vector3(0.0f, 4.0f, 0.0f);
             Quaternion spawnRotation = Quaternion.identity;
             Instantiate(enemySpawn, spawnPosition, spawnRotation);
-            yield return new WaitForSeconds(Random.Range(1.0f, 2.0f));
+            yield return new WaitForSeconds(Random.Range(4.0f, 8.0f));
             Debug.Log("Spawned " + enemySpawn.name + "!");
         }
     }
