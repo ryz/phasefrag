@@ -5,7 +5,7 @@ using System.Collections;
 public class GameSystem : MonoBehaviour {
 
 
-    public float scoreCount = 0;
+    [HideInInspector] public float scoreCount = 0;
     public Text score;
 
     public GameObject enemySpawn;
