@@ -5,6 +5,9 @@ public class SimpleEnemy : MonoBehaviour
 {
 
     public int HP = 1;
+
+    public GameSystem gameSystem;
+
     // Use this for initialization
     void Start()
     {
@@ -39,7 +42,7 @@ public class SimpleEnemy : MonoBehaviour
             Debug.Log(">>>>> TRIGGER MAH BOI");
             Destroy(gameObject);
             //other.GetComponent<Enemy>().Hurt();
-            //AddScore(2);
+            gameSystem.AddScore(2);
         }
 
     }

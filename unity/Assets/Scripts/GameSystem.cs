@@ -36,7 +36,7 @@ public class GameSystem : MonoBehaviour {
 
     }
 
-    void AddScore(int scoreNum)
+    public void AddScore(int scoreNum)
     {
         scoreCount += scoreNum;
         score.text = "Score: " + scoreCount;
