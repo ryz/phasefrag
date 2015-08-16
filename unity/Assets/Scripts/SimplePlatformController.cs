@@ -31,6 +31,10 @@ public class SimplePlatformController : MonoBehaviour {
     private float playerRespawnDelay = 3;
     private float playerRespawnStart;
 
+    public Transform playerStart;
+
+    public Transform playerPrison;
+    public bool isImprisoned = false;
 
     private bool grounded = false;
     private Animator anim;
@@ -127,6 +131,13 @@ public class SimplePlatformController : MonoBehaviour {
             rb2d.AddForce(new Vector2(0f, jumpForce));
             jump = false;
         }
+
+        // Check if the player is 'dead' (aka in prison) and respawn him after a delay
+        if (isImprisoned && Time.time > playerRespawnStart)
+        {
+            transform.position = playerStart.position;
+            isImprisoned = false;
+        }
     }
 
     void Flip()
@@ -155,19 +166,17 @@ public class SimplePlatformController : MonoBehaviour {
     }
 
     void OnCollisionEnter2D(Collision2D collisionTarget) {
-        if (collisionTarget.gameObject.tag == "Enemy")
-        {
-            Debug.Log("bump into " + collisionTarget.gameObject.name);
-        }
+        if (collisionTarget.gameObject.layer != 12)
+            Debug.Log(gameObject.name + " bumped into " + collisionTarget.gameObject.name);
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player")
         {
-            Debug.Log(">>>>> TRIGGER MAH BOI");
-            //Destroy(gameObject);
+            Debug.Log(">>>>>>>> " + gameObject.name + " telefragged " + collision.name);
             PlayerDeath();
+
             gameSystem.AddScore(5);
         }
 
@@ -175,12 +184,12 @@ public class SimplePlatformController : MonoBehaviour {
 
     void PlayerDeath()
     {
+        // set the respawn delay
         playerRespawnStart = Time.time + playerRespawnDelay;
-        Debug.Log("Player died");
-        GetComponent<Renderer>().enabled = false;
-        if (Time.time > playerRespawnStart)
-        {
-        GetComponent<Renderer>().enabled = true;
-        }
+        Debug.Log("Player " + gameObject.name + " died");
+
+        // move the player outside the arena, inside the "prison"
+        transform.position = playerPrison.position;
+        isImprisoned = true;
     }
 }
