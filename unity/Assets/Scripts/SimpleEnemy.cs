@@ -40,7 +40,7 @@ public class SimpleEnemy : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             Debug.Log(">>>>> TRIGGER MAH BOI");
-            Destroy(gameObject);
+            Death();
             //other.GetComponent<Enemy>().Hurt();
             gameSystem.AddScore(2);
         }

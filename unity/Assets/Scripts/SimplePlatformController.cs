@@ -20,6 +20,7 @@ public class SimplePlatformController : MonoBehaviour {
     public Slider phaseBarSlider;
     public Text phaseBarNum;
 
+    public GameSystem gameSystem;
 
     public bool overlap;
 
@@ -27,10 +28,18 @@ public class SimplePlatformController : MonoBehaviour {
     private float phaseRegenDelay = 1;
     private float phaseRegenStart;
 
+    private float playerRespawnDelay = 3;
+    private float playerRespawnStart;
+
 
     private bool grounded = false;
     private Animator anim;
     private Rigidbody2D rb2d;
+
+    public string playerIdentifier = "P1";
+    public string jumpButton = "Jump";
+    public string horizontalCtrl = "Horizontal";
+    public string phaseShiftButton = "PhaseShift";
 
     // Use this for initialization
     void Awake() {
@@ -45,31 +54,34 @@ public class SimplePlatformController : MonoBehaviour {
     void Update() {
         grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
-        if (Input.GetKeyDown(KeyCode.W) && grounded || Input.GetKeyDown(KeyCode.UpArrow) && grounded || Input.GetButtonDown("Jump") && grounded)
+        if (Input.GetButtonDown(jumpButton) && grounded)
         {
             jump = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.RightControl) || Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown(phaseShiftButton))
         {
             PhaseShiftStart();
         }
 
-        if (Input.GetKey(KeyCode.RightControl) || Input.GetButton("Fire1"))
+        if (Input.GetButton(phaseShiftButton))
         {
-            if (phaseBarSlider.value > 0)
-            {
-                phaseBarSlider.value -= .01f;
-                phaseBarNum.text = "Phase Bar: " + Mathf.Round(phaseBarSlider.value * 100) + "%";
-            }
 
-            if (phaseBarSlider.value <= 0)
-            {
-                PhaseShiftEnd();
-            }
+                if (phaseBarSlider.value > 0)
+                {
+                    phaseBarSlider.value -= .01f;
+                    phaseBarNum.text = "Phase Bar: " + Mathf.Round(phaseBarSlider.value * 100) + "%";
+                }
+
+                if (phaseBarSlider.value <= 0)
+                {
+                    PhaseShiftEnd();
+                }
+          
+
         }
 
-        if (!Input.GetKey(KeyCode.RightControl) || !Input.GetButton("Fire1"))
+        if (!Input.GetButton(phaseShiftButton))
         {
             if (phaseBarSlider.value < 100)
             {
@@ -82,7 +94,7 @@ public class SimplePlatformController : MonoBehaviour {
             }
         }
 
-        if (Input.GetKeyUp(KeyCode.RightControl) || Input.GetButtonUp("Fire1"))
+        if (Input.GetButtonUp(phaseShiftButton))
         {
             PhaseShiftEnd();
         }
@@ -95,7 +107,7 @@ public class SimplePlatformController : MonoBehaviour {
 
     void FixedUpdate()
     {
-        float h = Input.GetAxis("Horizontal");
+        float h = Input.GetAxis(horizontalCtrl);
         anim.SetFloat("Speed", Mathf.Abs(h));
 
         if (h * rb2d.velocity.x < maxSpeed)
@@ -129,12 +141,16 @@ public class SimplePlatformController : MonoBehaviour {
     {
         body.GetComponent<Renderer>().enabled = false;
         Physics2D.IgnoreLayerCollision(9, 10, true);
+        Physics2D.IgnoreLayerCollision(9, 13, true);
+        Physics2D.IgnoreLayerCollision(13, 10, true);
     }
 
     void PhaseShiftEnd()
     {
         body.GetComponent<Renderer>().enabled = true;
         Physics2D.IgnoreLayerCollision(9, 10, false);
+        Physics2D.IgnoreLayerCollision(9, 13, false);
+        Physics2D.IgnoreLayerCollision(13, 10, false);
         phaseRegenStart = Time.time + phaseRegenDelay;
     }
 
@@ -142,6 +158,29 @@ public class SimplePlatformController : MonoBehaviour {
         if (collisionTarget.gameObject.tag == "Enemy")
         {
             Debug.Log("bump into " + collisionTarget.gameObject.name);
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
+            Debug.Log(">>>>> TRIGGER MAH BOI");
+            //Destroy(gameObject);
+            PlayerDeath();
+            gameSystem.AddScore(5);
+        }
+
+    }
+
+    void PlayerDeath()
+    {
+        playerRespawnStart = Time.time + playerRespawnDelay;
+        Debug.Log("Player died");
+        GetComponent<Renderer>().enabled = false;
+        if (Time.time > playerRespawnStart)
+        {
+        GetComponent<Renderer>().enabled = true;
         }
     }
 }
